@@ -20,6 +20,7 @@ import pandas as pd
 
 import factors
 import backtest as bt
+import jp_names
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 FUND = os.path.join(HERE, "data", "fundamentals.csv")
@@ -187,6 +188,7 @@ def build(n=25, max_pbr=None, **kw):
     ma = bt.at(P["px"].rolling(200).mean(), t)
 
     fund = load_fundamentals()
+    names = jp_names.load()
     rows = []
     for c in codes:
         r = dict(コード=c, 株価=round(float(px_t[c]), 1),
@@ -199,6 +201,11 @@ def build(n=25, max_pbr=None, **kw):
         if not fund.empty and c in fund.index:
             for col in fund.columns:
                 r[col] = fund.loc[c, col]
+        # 銘柄名・業種は東証(JPX)公式の日本語表記を優先する
+        if not names.empty and c in names.index:
+            r["銘柄名"] = names.loc[c, "銘柄名"]
+            r["業種"] = names.loc[c, "業種"]
+            r["規模"] = names.loc[c, "規模"]
         rows.append(r)
     df = pd.DataFrame(rows)
     if df.empty:
@@ -226,7 +233,7 @@ def to_text(df, t) -> str:
          ""]
     for _, r in df.iterrows():
         name = r.get("銘柄名", "")
-        sec = r.get("セクター", "")
+        sec = r.get("業種") or r.get("セクター", "")
         L.append(f"── {r['コード']} {name}  [{sec}]  株価 {r['株価']:,.1f}円")
         L.append("   ◆ 検証済みの推奨理由")
         for x in r["検証済み理由"]:

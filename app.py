@@ -79,7 +79,7 @@ with tabs[0]:
                 show[c] = pd.to_numeric(show[c], errors="coerce").map(lambda v: pc(v))
         if "時価総額" in show:
             show["時価総額(億)"] = (pd.to_numeric(show["時価総額"], errors="coerce") / 1e8).round(0)
-        cols = [c for c in ["コード", "銘柄名", "セクター", "株価", "配当利回り", "年間配当",
+        cols = [c for c in ["コード", "銘柄名", "業種", "規模", "株価", "配当利回り", "年間配当",
                             "増配率3年", "減配月数5年", "PBR", "PER実績", "ROE", "配当性向",
                             "利益成長", "ボラティリティ", "時価総額(億)", "売買代金億円",
                             "損切り目安", "トレンド線"] if c in show]

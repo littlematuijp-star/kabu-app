@@ -69,6 +69,16 @@ def main():
         total += os.path.getsize(f)
         print(f"  現ファンダ {d.shape}  {os.path.getsize(f)/1e6:.1f} MB")
 
+    # ---- 日本語の銘柄名・業種（東証公式）----
+    import jp_names
+    try:
+        jp_names.save()
+        f = os.path.join(PACK, "names.parquet")
+        total += os.path.getsize(f)
+        print(f"  銘柄名   {os.path.getsize(f)/1e6:.1f} MB")
+    except Exception as e:
+        print(f"  銘柄名の取得に失敗（既存を維持）: {type(e).__name__}")
+
     print(f"合計 {total/1e6:.1f} MB  → {PACK}")
 
 
