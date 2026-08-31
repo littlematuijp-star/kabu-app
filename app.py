@@ -54,7 +54,20 @@ max_pbr = {"使わない": None, "1.5倍以下": 1.5, "1.0倍以下": 1.0}[pbr_m
 kw = dict(min_yield=min_yield, max_per_sector=max_sector, max_vol=0.6, require_uptrend=True)
 
 st.sidebar.divider()
-st.sidebar.caption("**データ更新**: `データ更新.bat`\n\n**再検証**: `検証実行.bat`")
+# ローカルで動かしているか、クラウド(Streamlit Cloud)かで案内を変える。
+# .bat はPCのフォルダにあるファイルなので、クラウドでは実行できない。
+IS_LOCAL = os.path.isdir(os.path.join(HERE, "data", "raw"))
+if IS_LOCAL:
+    st.sidebar.caption("**データ更新**: `データ更新.bat`\n\n**再検証**: `検証実行.bat`")
+else:
+    try:
+        _last = str(load()[0]["px"].index[-1].date())
+    except Exception:
+        _last = "?"
+    st.sidebar.caption(
+        "**株価データ**: " + _last + " 時点\n\n"
+        "平日18時(日本時間)に自動更新されます。決算データは毎月1日。"
+        "手動の操作は不要です。")
 
 tabs = st.tabs(["🎯 今日の推奨", "💼 保有チェック", "📊 過去10年の成績", "📖 このツールの限界"])
 
@@ -162,7 +175,7 @@ with tabs[1]:
 with tabs[2]:
     f = os.path.join(OUT, "final.csv")
     if not os.path.exists(f):
-        st.info("`検証実行.bat` を実行すると、ここに過去10年の成績が出ます。")
+        st.info("検証結果のファイルが見つかりません。")
     else:
         d = pd.read_csv(f).set_index("戦略")
         st.subheader("過去10年の成績（2017/9〜2026/8・配当込み・売買コスト0.3%差引後）")
