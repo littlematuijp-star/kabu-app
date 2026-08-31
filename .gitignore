@@ -1,0 +1,16 @@
+# 生データ（146MB）は公開しない。data/packed/*.parquet を使う
+data/raw/
+data/fin/
+data/bench/
+data/fundamentals.csv
+data/*.log
+data/out/*.log
+__pycache__/
+*.pyc
+.venv/
+# 証明書（ローカル専用）
+ca_bundle.pem
+avast_*.pem
+
+# 初期調査に使った作業ファイル（アプリは使わない）
+work/
