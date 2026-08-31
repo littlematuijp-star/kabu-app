@@ -253,7 +253,7 @@ def to_text(df, t) -> str:
 
 
 if __name__ == "__main__":
-    df, t, rej = build(n=20, min_yield=0.02, max_per_sector=3, max_vol=0.6)
+    df, t, rej = build(n=10, min_yield=0.02, max_per_sector=3, max_vol=0.6)
     txt = to_text(df, t)
     if len(rej):
         txt += chr(10) + '■ ファンダメンタルで除外した銘柄（配当条件は満たしていた）' + chr(10)

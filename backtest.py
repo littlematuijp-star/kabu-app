@@ -55,7 +55,7 @@ def zscore(s: pd.Series) -> pd.Series:
 # ------------------------------------------------------------------ 銘柄選択
 def select(F, t, n=25, min_yield=0.025, max_cuts=6, max_vol=0.45,
            min_turnover=1e8, max_per_sector=4, require_uptrend=True,
-           w=(1.0, 0.6, 0.8, 0.5, 0.3), extra_filter=None):
+           w=(1.0, 0.6, 0.8, 0.5, 0.3), extra_filter=None, offset=0):
     """
     ある時点 t で保有する銘柄を選ぶ。
     戻り値: 銘柄コードのリスト（空なら現金）
@@ -104,6 +104,8 @@ def select(F, t, n=25, min_yield=0.025, max_cuts=6, max_vol=0.45,
                    + w[4] * zscore(df.mom.fillna(0)))
 
     # --- 業種分散をかけながら上位から採用 ---
+    # offset は「上位から何位ぶん飛ばすか」。
+    # 上位5銘柄と6〜10位を比べ、点数の高さが本当に成績に効いているかを検証するために使う。
     picked, count = [], {}
     for code in df.sort_values("score", ascending=False).index:
         s = sector_of(code)
@@ -111,9 +113,9 @@ def select(F, t, n=25, min_yield=0.025, max_cuts=6, max_vol=0.45,
             continue
         picked.append(code)
         count[s] = count.get(s, 0) + 1
-        if len(picked) >= n:
+        if len(picked) >= n + offset:
             break
-    return picked
+    return picked[offset:]
 
 
 # ------------------------------------------------------------------ 実行
